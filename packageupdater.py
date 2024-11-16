@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import subprocess
 import requests
 from dataclasses import dataclass
@@ -32,7 +33,7 @@ WCHISP_PKG = PIOPackage(
     },
     package_template="""{
   "name": "tool-wchisp",
-  "version": "0.23.230228",
+  "version": "0.30.230228",
   "description": "WCH ISP Tool in Rust",
   "keywords": [
     "tools",
@@ -57,6 +58,52 @@ WCHISP_PKG = PIOPackage(
         "darwin_arm64": "chmod +x wchisp && rm -rf wchisp-macos-arm64"
     }
 )
+
+WLINK_PKG = PIOPackage(
+    "tool-wlink",
+    {
+        # explicitly use x86 build because it's compatible with the WCH drivers as well!
+        "windows_amd64": "https://github.com/ch32-rs/wlink/releases/download/v0.1.1/wlink-v0.1.1-win-x86.zip",
+        "windows_x86": "https://github.com/ch32-rs/wlink/releases/download/v0.1.1/wlink-v0.1.1-win-x86.zip",
+        # No Windows ARM64 or ARM32 builds.
+        # Linux
+        "linux_x86_64": "https://github.com/ch32-rs/wlink/releases/download/v0.1.1/wlink-v0.1.1-linux-x64.tar.gz",
+        #"linux_i686": "",
+        #"linux_aarch64": "",
+        #"linux_armv7l": "",
+        #"linux_armv6l": "",
+        # Mac (Intel and ARM are separate)
+        "darwin_x86_64": "https://github.com/ch32-rs/wlink/releases/download/nightly/wlink-macos-x64.tar.gz",
+        "darwin_arm64": "https://github.com/ch32-rs/wlink/releases/download/v0.1.1/wlink-v0.1.1-macos-arm64.tar.gz"
+    },
+    package_template="""{
+  "name": "tool-wlink",
+  "version": "0.23.240627",
+  "description": "An open source WCH-Link library/command line tool written in Rust.",
+  "keywords": [
+    "tools",
+    "uploader",
+    "risc-v"
+  ],
+  "homepage": "https://crates.io/crates/wlink",
+  "license": "MIT",
+  "system": [
+    "windows_x86",
+    "windows_amd64"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ch32-rs/wlink"
+  }
+}""",
+    extra_cmds= {
+        "linux_x86_64": "chmod +x wlink",
+        "linux_aarch64": "chmod +x wlink",
+        "darwin_x86_64": "chmod +x wlink",
+        "darwin_arm64": "chmod +x wlink"
+    }
+)
+
 
 THIS_DIR = Path(__file__).resolve().parent
 
@@ -120,7 +167,8 @@ def build_package(package: PIOPackage):
     for genned_file in THIS_DIR.glob(f"{package.name}-*.tar.gz"):
         print("pio pkg publish --type tool --owner \"community-ch32v\" --notify \"" + str(genned_file) + "\"")
 def main():
-    build_package(WCHISP_PKG)
+    # build_package(WCHISP_PKG)
+    build_package(WLINK_PKG)
 
 if __name__ == '__main__':
     main()
